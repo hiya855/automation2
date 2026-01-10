@@ -1,12 +1,12 @@
 # --- Stage 1: Build Stage ---
-FROM python:3.11-slim as builder
+FROM python:3.11-slim AS builder
 
 # Set the working directory
 WORKDIR /app
 
 # Prevent Python from writing .pyc files and buffering stdout
-ENV PYTHONDONTWRITEBYTECODE 1
-ENV PYTHONUNBUFFERED 1
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
 
 # Install build dependencies for psycopg2 (if needed)
 RUN apt-get update && apt-get install -y \
