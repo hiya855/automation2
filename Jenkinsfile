@@ -5,6 +5,7 @@ pipeline {
         // ID must match the Credential ID you create in Jenkins
         DOCKER_HUB_CRED = credentials('docker-hub-id')
         IMAGE_NAME = "hiya855/automation"
+        DOCKER_API_VERSION = "1.44"
     }
 
     stages {
@@ -25,7 +26,7 @@ pipeline {
         stage('Security Scan (Trivy)') {
             steps {
                 // Scans for vulnerabilities before pushing
-                sh "trivy image --severity HIGH,CRITICAL ${IMAGE_NAME}:latest"
+                sh "trivy image --severity HIGH,CRITICAL --docker-host unix:///var/run/docker.sock ${IMAGE_NAME}:latest"
             }
         }
 
