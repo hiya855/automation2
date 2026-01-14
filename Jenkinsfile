@@ -45,4 +45,12 @@ pipeline {
             cleanWs() // Keeps your Jenkins VM clean
         }
     }
+    
+    post {
+        always {
+            // This will send even if it succeeds, good for testing!
+            mail to: 'karanpuriahiya@gmail.com',
+                 subject: "Status: ${currentBuild.fullDisplayName}",
+                 body: "Link: ${env.BUILD_URL}"
+        }
 }
