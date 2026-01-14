@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         // ID must match the Credential ID you create in Jenkins
-        DOCKER_HUB_CRED = credentials('docker-hub-id')
+        DOCKER_HUB_CRED = credentials('dcker-hub-id')
         IMAGE_NAME = "hiya855/automation"
         DOCKER_API_VERSION = "1.44"
     }
