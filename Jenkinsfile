@@ -30,7 +30,7 @@ pipeline {
         stage('Push to Docker Hub') {
             steps {
                 sh "echo \$DOCKER_HUB_CRED_PSW | docker login -u \$DOCKER_HUB_CRED_USR --password-stdin"
-                sh "docker push ${IMAE_NAME}:${BUILD_NUMBER}"
+                sh "docker push ${IMAGE_NAME}:${BUILD_NUMBER}"
                 sh "docker push ${IMAGE_NAME}:latest"
             }
         }
