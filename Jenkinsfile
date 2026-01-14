@@ -21,11 +21,11 @@ pipeline {
             }
         }
 
-       # stage('Security Scan (Trivy)') {
-       #     steps {
-       #         sh "trivy image --severity HIGH,CRITICAL --docker-host unix:///var/run/docker.sock ${IMAGE_NAME}:latest"
-       #     }
-       # }
+       // stage('Security Scan (Trivy)') {
+       //     steps {
+       //         sh "trivy image --severity HIGH,CRITICAL --docker-host unix:///var/run/docker.sock ${IMAGE_NAME}:latest"
+       //     }
+       // }
 
         stage('Push to Docker Hub') {
             steps {
