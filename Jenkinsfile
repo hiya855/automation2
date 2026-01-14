@@ -11,21 +11,18 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                // Jenkins pulls the latest code from your repo
                 checkout scm
             }
         }
 
         stage('Build Docker Image') {
             steps {
-                // Builds using the multi-stage Dockerfile we created
                 sh "docker build -t ${IMAGE_NAME}:${BUILD_NUMBER} -t ${IMAGE_NAME}:latest ."
             }
         }
 
         stage('Security Scan (Trivy)') {
             steps {
-                // Scans for vulnerabilities before pushing
                 sh "trivy image --severity HIGH,CRITICAL --docker-host unix:///var/run/docker.sock ${IMAGE_NAME}:latest"
             }
         }
@@ -37,20 +34,18 @@ pipeline {
                 sh "docker push ${IMAGE_NAME}:latest"
             }
         }
-    }
+    } // Added missing brace to close 'stages'
 
     post {
         always {
+            // Logout and cleanup
             sh "docker logout"
-            cleanWs() // Keeps your Jenkins VM clean
+            cleanWs() 
+
+            // Sending email notification via SMTP
+            mail to: 'karanpuriahiya@gmail.com',
+                 subject: "Jenkins Build ${currentBuild.fullDisplayName}: ${currentBuild.result ?: 'SUCCESS'}",
+                 body: "Build Process Finished.\n\nProject: ${env.JOB_NAME}\nBuild Number: ${env.BUILD_NUMBER}\nConsole Output: ${env.BUILD_URL}console"
         }
     }
-    
-    post {
-        always {
-            // This will send even if it succeeds, good for testing!
-            mail to: 'karanpuriahiya@gmail.com',
-                 subject: "Status: ${currentBuild.fullDisplayName}",
-                 body: "Link: ${env.BUILD_URL}"
-        }
 }
