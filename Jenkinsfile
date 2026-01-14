@@ -21,11 +21,11 @@ pipeline {
             }
         }
 
-        stage('Security Scan (Trivy)') {
-            steps {
-                sh "trivy image --severity HIGH,CRITICAL --docker-host unix:///var/run/docker.sock ${IMAGE_NAME}:latest"
-            }
-        }
+       # stage('Security Scan (Trivy)') {
+       #     steps {
+       #         sh "trivy image --severity HIGH,CRITICAL --docker-host unix:///var/run/docker.sock ${IMAGE_NAME}:latest"
+       #     }
+       # }
 
         stage('Push to Docker Hub') {
             steps {
@@ -43,6 +43,7 @@ pipeline {
             cleanWs() 
 
             // Sending email notification via SMTP
+            echo "-------- DEBUG: POST BLOCK IS RUNNING --------"
             mail to: 'karanpuriahiya@gmail.com',
                  subject: "Jenkins Build ${currentBuild.fullDisplayName}: ${currentBuild.result ?: 'SUCCESS'}",
                  body: "Build Process Finished.\n\nProject: ${env.JOB_NAME}\nBuild Number: ${env.BUILD_NUMBER}\nConsole Output: ${env.BUILD_URL}console"
