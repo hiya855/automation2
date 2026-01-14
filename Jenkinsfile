@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         // ID must match the Credential ID you create in Jenkins
-        DOCKER_HUB_CRED = credentials('dcker-hub-id')
+        DOCKER_HUB_CRED = credentials('docker-hub-id')
         IMAGE_NAME = "hiya855/automation"
         DOCKER_API_VERSION = "1.44"
     }
@@ -30,7 +30,7 @@ pipeline {
         stage('Push to Docker Hub') {
             steps {
                 sh "echo \$DOCKER_HUB_CRED_PSW | docker login -u \$DOCKER_HUB_CRED_USR --password-stdin"
-                sh "docker push ${IMAGE_NAME}:${BUILD_NUMBER}"
+                sh "docker push ${IMAE_NAME}:${BUILD_NUMBER}"
                 sh "docker push ${IMAGE_NAME}:latest"
             }
         }
