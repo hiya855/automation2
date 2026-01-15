@@ -3,6 +3,7 @@ services:
   # The Flask Application
   web:
     build: .
+    restart: always  
     ports:
       - "5000:5000"
     environment:
@@ -15,6 +16,7 @@ services:
   # The PostgreSQL Database
   db:
     image: postgres:15
+    restart: always   
     environment:
       - POSTGRES_USER=hiya_user
       - POSTGRES_PASSWORD=hiya_password
