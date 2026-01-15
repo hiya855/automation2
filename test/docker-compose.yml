@@ -1,0 +1,21 @@
+# Create a minimal compose file that points to your CLOUD image
+#cat << EOF > docker-compose.yml
+services:
+  web:
+    image: hiya855/automation:latest  # <--- PULLS FROM DOCKER HUB
+    ports:
+      - "9000:5000"
+    environment:
+      - DATABASE_URL=postgresql://hiya_user:hiya_password@db:5432/hiya_db
+    depends_on:
+      - db
+
+  db:
+    image: postgres:15
+    environment:
+      - POSTGRES_USER=hiya_user
+      - POSTGRES_PASSWORD=hiya_password
+      - POSTGRES_DB=hiya_db
+
+
+

@@ -1,0 +1,18 @@
+---
+- name: Deploy Automation App via SSH
+  hosts: webservers
+  become: yes
+  tasks:
+    - name: Ensure we are in the automation directory
+      ansible.builtin.shell: cd /automation
+
+    - name: Pull the latest application image
+      community.docker.docker_image:
+        name: "hiya855/automation:latest"
+        source: pull
+
+    - name: Deploy services using Docker Compose
+      community.docker.docker_compose_v2:
+        project_src: /automation
+        state: present
+        pull: always

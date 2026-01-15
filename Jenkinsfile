@@ -2,10 +2,8 @@ pipeline {
     agent any
 
     environment {
-        // ID must match the Credential ID you create in Jenkins
         DOCKER_HUB_CRED = credentials('docker-hub-id')
         IMAGE_NAME = "hiya855/automation"
-        DOCKER_API_VERSION = "1.44"
     }
 
     stages {
@@ -15,38 +13,38 @@ pipeline {
             }
         }
 
-        stage('Build Docker Image') {
+        stage('Build & Push Image') {
             steps {
-                sh "docker build -t ${IMAGE_NAME}:${BUILD_NUMBER} -t ${IMAGE_NAME}:latest ."
-            }
-        }
-
-       // stage('Security Scan (Trivy)') {
-       //     steps {
-       //         sh "trivy image --severity HIGH,CRITICAL --docker-host unix:///var/run/docker.sock ${IMAGE_NAME}:latest"
-       //     }
-       // }
-
-        stage('Push to Docker Hub') {
-            steps {
+                sh "docker build -t ${IMAGE_NAME}:latest ."
                 sh "echo \$DOCKER_HUB_CRED_PSW | docker login -u \$DOCKER_HUB_CRED_USR --password-stdin"
-                sh "docker push ${IMAGE_NAME}:${BUILD_NUMBER}"
                 sh "docker push ${IMAGE_NAME}:latest"
             }
         }
-    } // Added missing brace to close 'stages'
+
+        stage('SSH Deploy via Ansible') {
+            steps {
+                sh "ansible-playbook -i /automation/inventory.ini /automation/deploy.yml"
+            }
+        }
+
+        stage('Cleanup Local Images') {
+            steps {
+                echo "Removing local images to save disk space..."
+                // Remove the specific image built in this pipeline
+                sh "docker rmi ${IMAGE_NAME}:latest || true"
+                // Optional: Remove 'dangling' images (unused layers)
+                sh "docker image prune -f"
+            }
+        }
+    }
 
     post {
         always {
-            // Logout and cleanup
-            sh "docker logout"
-            cleanWs() 
-
-            // Sending email notification via SMTP
-            echo "-------- DEBUG: POST BLOCK IS RUNNING --------"
+            cleanWs()
+            echo "-------- DEBUG: DEPLOYMENT COMPLETE --------"
             mail to: 'karanpuriahiya@gmail.com',
-                 subject: "Jenkins Build ${currentBuild.fullDisplayName}: ${currentBuild.result ?: 'SUCCESS'}",
-                 body: "Build Process Finished.\n\nProject: ${env.JOB_NAME}\nBuild Number: ${env.BUILD_NUMBER}\nConsole Output: ${env.BUILD_URL}console"
+                 subject: "Automation Deployment: ${currentBuild.result ?: 'SUCCESS'}",
+                 body: "Build Finished. Access App at: https://unlofty-kitty-glottologic.ngrok-free.dev"
         }
     }
 }
